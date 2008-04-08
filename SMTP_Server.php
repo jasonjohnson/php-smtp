@@ -31,6 +31,9 @@ class SMTP_Server {
 		$this->socket->listen();
 	}
 	
+	/**
+	 * Enters an infinite loop and listens for new connections from remote hosts.
+	 */
 	function run() {
 		while(true) {
 			$this->remote = $this->socket->accept();
