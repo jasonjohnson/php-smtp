@@ -1,7 +1,5 @@
 <?php
 
-	require_once 'SMTP_Server_Socket.php';
-
 	class SMTP_Server_Session {
 		var $socket;
 		var $buffer;

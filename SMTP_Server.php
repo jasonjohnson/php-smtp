@@ -1,8 +1,5 @@
 <?php
-
-	require_once 'SMTP_Server_Socket.php';
-	require_once 'SMTP_Server_Session.php';
-
+	
 	class SMTP_Server {
 		var $socket;
 		var $host;
