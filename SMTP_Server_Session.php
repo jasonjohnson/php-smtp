@@ -106,7 +106,7 @@ class SMTP_Server_Session {
 		
 		$this->socket->write(SMTP_354);
 		
-		$file = SMTP_DEBUGSMTP_INBOUND.$this->date."-".$this->to['user']."-".$this->to['domain'];
+		$file = SMTP_INBOUND.$this->date."-".$this->to['user']."-".$this->to['domain'];
 		
 		if($msg = fopen($file, 'w+')) {
 			while($this->buffer = $this->socket->read()) {
