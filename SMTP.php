@@ -5,7 +5,7 @@
 	
 	require_once 'SMTP_Server.php';
 	
-	$server = new SMTP_Server('70.87.154.59');
+	$server = new SMTP_Server();
 	$server->run();
 	
 ?>
