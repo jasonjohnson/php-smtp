@@ -31,6 +31,9 @@ class SMTP_Server_Session {
 		);
 	}
 	
+	/**
+	 * Enters a loop to read and process incoming commands, exits when $this->complete is true
+	 */
 	function run() {
 		$this->socket->write(SMTP_220);
 		

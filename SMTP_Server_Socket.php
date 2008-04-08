@@ -16,6 +16,11 @@ class SMTP_Server_Socket {
 	var $remote_address;
 	var $debug;
 	
+	/**
+	 * Constructor with an optional argument of a socket resource
+	 *
+	 * @param resource $socket A socket resource as returned by socket_create() or socket_accept()
+	 */
 	function SMTP_Server_Socket($socket = null) {
 		$this->log = new SMTP_Server_Log();
 		$this->socket = $socket;
@@ -28,6 +33,12 @@ class SMTP_Server_Socket {
 		}
 	}
 	
+	/**
+	 * Binds the socket to a host and port
+	 *
+	 * @param string $host The host to bind the socket to
+	 * @param int $port The port on the host to use
+	 */
 	function bind($host, $port) {
 		while(!socket_bind($this->socket, $host, $port)) {
 			$this->log->msg(SMTP_NOTICE, "Binding...");
@@ -37,13 +48,21 @@ class SMTP_Server_Socket {
 		
 		$this->log->msg(SMTP_NOTICE, "Bound!");
 	}
-			
+	
+	/**
+	 * Cause the socket to listen for incoming connections
+	 */
 	function listen() {
 		$this->log->msg(SMTP_NOTICE, "Listening...");
 		
 		socket_listen($this->socket);
 	}
 	
+	/**
+	 * Block and accept an incoming connection
+	 *
+	 * @return SMTP_Server_Socket
+	 */
 	function accept() {
 		$remote = socket_accept($this->socket);
 		
@@ -56,16 +75,31 @@ class SMTP_Server_Socket {
 		return new SMTP_Server_Socket($remote);
 	}
 	
+	/**
+	 * Returns the address of the remote client or server
+	 *
+	 * @return string
+	 */
 	function remote_address() {
 		return $this->remote_address;
 	}
 	
+	/**
+	 * Writes the supplied buffer to the socket
+	 *
+	 * @param string $buffer The buffer to be written to the socket
+	 */
 	function write($buffer) {
 		$this->log->msg(SMTP_DEBUG, ">>> $buffer");
 		
 		socket_write($this->socket, ($buffer."\r\n"));
 	}
 	
+	/**
+	 * Reads and returns a default length of bytes from the socket
+	 *
+	 * @return string
+	 */
 	function read() {
 		$buffer = socket_read($this->socket, $this->length);
 		
@@ -73,7 +107,10 @@ class SMTP_Server_Socket {
 			
 		return $buffer;
 	}
-			
+	
+	/**
+	 * Closes the socket
+	 */
 	function close() {
 		$this->log->msg(SMTP_DEBUG, "Closing socket connection");
 		

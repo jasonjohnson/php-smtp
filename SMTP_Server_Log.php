@@ -36,8 +36,9 @@ class SMTP_Server_Log {
 		$log = false;
 		$time = date('j/M/Y:G:i:s O', time());
 		
-		if($level <= SMTP_LOG_LEVEL)
+		if($level <= SMTP_LOG_LEVEL) {
 			$log = true;
+		}
 		
 		// Translate the int constant into a human-readable form
 		switch($level) {
@@ -48,8 +49,9 @@ class SMTP_Server_Log {
 			case SMTP_DEBUG: $level = 'DEBUG'; break;
 		}
 		
-		if($log)
+		if($log) {
 			$this->write("[$level] - [$time] - $msg");
+		}
 		
 		$this->close();
 	}
