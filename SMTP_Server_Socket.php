@@ -56,7 +56,7 @@ class SMTP_Server_Socket {
 			print("[XXX] Accepted connection from '".$this->remote_address."'\n");
 		}
 		
-		return $remote;
+		return new SMTP_Server_Socket($remote);
 	}
 	
 	function remote_address() {

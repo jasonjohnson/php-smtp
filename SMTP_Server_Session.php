@@ -19,7 +19,7 @@ class SMTP_Server_Session {
 	var $complete;
 	
 	function SMTP_Server_Session($socket) {
-		$this->socket = new SMTP_Server_Socket($socket);
+		$this->socket = $socket;
 		$this->date = time();
 		$this->to = array();
 		$this->from = array();
