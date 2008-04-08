@@ -14,7 +14,6 @@ class SMTP_Server_Socket {
 	var $socket;
 	var $length;
 	var $remote_address;
-	var $debug;
 	
 	/**
 	 * Constructor with an optional argument of a socket resource
@@ -25,7 +24,6 @@ class SMTP_Server_Socket {
 		$this->log = new SMTP_Server_Log();
 		$this->socket = $socket;
 		$this->length = 1024;
-		$this->debug = true;
 		$this->remote_address = '';
 		
 		if(!$this->socket) {
