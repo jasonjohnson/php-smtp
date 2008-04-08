@@ -32,7 +32,7 @@ class SMTP_Server_Session {
 	}
 	
 	function run() {
-		$this->socket->write("220 Ready");
+		$this->socket->write(SMTP_220);
 		
 		while($this->buffer = $this->socket->read()) {
 			$cmd = substr($this->buffer, 0, 4);
@@ -45,7 +45,7 @@ class SMTP_Server_Session {
 			}
 		}
 		
-		$this->socket->write("221 Goodbye");
+		$this->socket->write(SMTP_221);
 		$this->socket->close();
 	}
 	
@@ -63,7 +63,7 @@ class SMTP_Server_Session {
 	}
 			
 	function HELO($arg) {
-		$this->socket->write("250 Hello");
+		$this->socket->write(SMTP_250);
 	} 
 	
 	function MAIL($arg) {
@@ -73,7 +73,7 @@ class SMTP_Server_Session {
 		$this->from['user'] = $arg[0];
 		$this->from['domain'] = $arg[1];
 		
-		$this->socket->write("250 Sender OK");
+		$this->socket->write(SMTP_250);
 	}
 	
 	function RCPT($arg) {
@@ -84,24 +84,24 @@ class SMTP_Server_Session {
 		$this->to['domain'] = $arr[1];
 		
 		if(!in_array($this->to['domain'], $this->domains)) {
-			$this->socket->write("550 Mailbox unavailable");
+			$this->socket->write(SMTP_550);
 			$this->socket->close();
 			
 			return;
 		}
 		
-		$this->socket->write("250 Recipient OK");
+		$this->socket->write(SMTP_250);
 	}
 	
 	function DATA($arg) {
 		if(!$this->to) {
-			$this->socket->write("503 Bad sequence of commands");
+			$this->socket->write(SMTP_503);
 			$this->socket->close();
 			
 			return;
 		}
 		
-		$this->socket->write("354 Begin data");
+		$this->socket->write(SMTP_354);
 		
 		$file = SMTP_DEBUGSMTP_INBOUND.$this->date."-".$this->to['user']."-".$this->to['domain'];
 		
@@ -117,22 +117,22 @@ class SMTP_Server_Session {
 			fclose($msg);
 		}
 		
-		$this->socket->write("250 Message accepted for delivery");
+		$this->socket->write(SMTP_250);
 		
 		$this->complete = true;
 	}
 	
 	function HELP($arg) {
-		$this->socket->write("250 Available commands: HELO, MAIL, RCPT, DATA, HELP, QUIT");
+		$this->socket->write(SMTP_250);
 	}
 	
 	function QUIT($arg) {
-		$this->socket->write("221 Goodbye");
+		$this->socket->write(SMTP_221);
 		$this->socket->close();
 	}
 	
 	function NOT_IMPLEMENTED() {
-		$this->socket->write("502 Command not implemented");
+		$this->socket->write(SMTP_502);
 	}
 }
 ?>

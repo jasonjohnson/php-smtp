@@ -34,16 +34,16 @@ define(SMTP_OUTBOUND, './outbound/');
 // 200's
 define(SMTP_211, '211 System status, or system help reply');
 define(SMTP_214, '214 Help message');
-define(SMTP_220, '220 <domain> Service ready');
-define(SMTP_221, '221 <domain> Service closing transmission channel');
+define(SMTP_220, '220 Service ready');
+define(SMTP_221, '221 Service closing transmission channel');
 define(SMTP_250, '250 Requested mail action okay, completed');
-define(SMTP_251, '251 User not local; will forward to <forward-path>');
+define(SMTP_251, '251 User not local');
 
 // 300's
 define(SMTP_354, '354 Start mail input; end with <CRLF>.<CRLF>');
 
 // 400's
-define(SMTP_421, '421 <domain> Service not available,');
+define(SMTP_421, '421 Service not available,');
 define(SMTP_450, '450 Requested mail action not taken: mailbox unavailable');
 define(SMTP_451, '451 Requested action aborted: error in processing');
 define(SMTP_452, '452 Requested action not taken: insufficient system storage');
@@ -55,7 +55,7 @@ define(SMTP_502, '502 Command not implemented');
 define(SMTP_503, '503 Bad sequence of commands');
 define(SMTP_504, '504 Command parameter not implemented');
 define(SMTP_550, '550 Requested action not taken: mailbox unavailable');
-define(SMTP_551, '551 User not local; please try <forward-path>');
+define(SMTP_551, '551 User not local');
 define(SMTP_552, '552 Requested mail action aborted: exceeded storage allocation');
 define(SMTP_553, '553 Requested action not taken: mailbox name not allowed');
 define(SMTP_554, '554 Transaction failed');
