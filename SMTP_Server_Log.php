@@ -9,14 +9,6 @@
  * @package php-smtp
  */
 
-define(SMTP_LOG, './log/smtp.log');
-
-define(SMTP_CRITICAL, 1);
-define(SMTP_ERROR, 2);
-define(SMTP_WARNING, 3);
-define(SMTP_NOTICE, 4);
-define(SMTP_DEBUG, 5);
-
 class SMTP_Server_Log {
 	var $handle;
 	
@@ -41,8 +33,13 @@ class SMTP_Server_Log {
 	function msg($level, $msg) {
 		$this->open();
 		
+		$log = false;
 		$time = date('j/M/Y:G:i:s O', time());
-				
+		
+		if($level <= SMTP_LOG_LEVEL)
+			$log = true;
+		
+		// Translate the int constant into a human-readable form
 		switch($level) {
 			case SMTP_CRITICAL: $level = 'CRITICAL'; break;
 			case SMTP_ERROR: $level = 'ERROR'; break;
@@ -51,7 +48,9 @@ class SMTP_Server_Log {
 			case SMTP_DEBUG: $level = 'DEBUG'; break;
 		}
 		
-		$this->write("[$level] - [$time] - $msg");
+		if($log)
+			$this->write("[$level] - [$time] - $msg");
+		
 		$this->close();
 	}
 }

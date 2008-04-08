@@ -10,12 +10,14 @@
  */
 
 class SMTP_Server_Socket {
+	var $log;
 	var $socket;
 	var $length;
 	var $remote_address;
 	var $debug;
 	
 	function SMTP_Server_Socket($socket = null) {
+		$this->log = new SMTP_Server_Log();
 		$this->socket = $socket;
 		$this->length = 1024;
 		$this->debug = true;
@@ -28,19 +30,16 @@ class SMTP_Server_Socket {
 	
 	function bind($host, $port) {
 		while(!socket_bind($this->socket, $host, $port)) {
-			if($this->debug)
-				print("[XXX] Binding...\n");
-			
+			$this->log->msg(SMTP_NOTICE, "Binding...");
+						
 			sleep(5);
 		}
 		
-		if($this->debug)
-			print("[XXX] Bound!\n");
+		$this->log->msg(SMTP_NOTICE, "Bound!");
 	}
 			
 	function listen() {
-		if($this->debug)
-			print("[XXX] Listening...\n");
+		$this->log->msg(SMTP_NOTICE, "Listening...");
 		
 		socket_listen($this->socket);
 	}
@@ -49,12 +48,10 @@ class SMTP_Server_Socket {
 		$remote = socket_accept($this->socket);
 		
 		if(!socket_getpeername($remote, $this->remote_address)) {
-			print("[XXX] Could not determine remote hostname!\n");
+			$this->log->msg(SMTP_WARNING, "Could not determine remote address");
 		}
 		
-		if($this->debug) {
-			print("[XXX] Accepted connection from '".$this->remote_address."'\n");
-		}
+		$this->log->msg(SMTP_DEBUG, "Accepted connection from '".$this->remote_address."'");
 		
 		return new SMTP_Server_Socket($remote);
 	}
@@ -64,8 +61,7 @@ class SMTP_Server_Socket {
 	}
 	
 	function write($buffer) {
-		if($this->debug)
-			print("[>>>] ".$buffer."\n");
+		$this->log->msg(SMTP_DEBUG, ">>> $buffer");
 		
 		socket_write($this->socket, ($buffer."\r\n"));
 	}
@@ -73,15 +69,13 @@ class SMTP_Server_Socket {
 	function read() {
 		$buffer = socket_read($this->socket, $this->length);
 		
-		if($this->debug)
-			print("[<<<] ".$buffer."\n");
+		$this->log->msg(SMTP_DEBUG, "<<< $buffer");
 			
 		return $buffer;
 	}
 			
 	function close() {
-		if($this->debug)
-			print("[XXX] Closing socket connection\n");
+		$this->log->msg(SMTP_DEBUG, "Closing socket connection");
 		
 		socket_close($this->socket);
 	}
