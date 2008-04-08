@@ -16,8 +16,12 @@
 			$this->date = time();
 			$this->to = array();
 			$this->from = array();
-			$this->domains = array('70.87.154.59');
 			$this->complete = false;
+			
+			$this->domains = array(
+				'localhost',
+				'127.0.0.1',
+			);
 		}
 		
 		function run() {
