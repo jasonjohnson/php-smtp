@@ -12,7 +12,6 @@
 class SMTP_Server_Socket {
 	var $log;
 	var $socket;
-	var $length;
 	var $remote_address;
 	
 	/**
@@ -23,7 +22,6 @@ class SMTP_Server_Socket {
 	function SMTP_Server_Socket($socket = null) {
 		$this->log = new SMTP_Server_Log();
 		$this->socket = $socket;
-		$this->length = 1024;
 		$this->remote_address = '';
 		
 		if(!$this->socket) {
@@ -99,7 +97,7 @@ class SMTP_Server_Socket {
 	 * @return string
 	 */
 	function read() {
-		$buffer = socket_read($this->socket, $this->length);
+		$buffer = socket_read($this->socket, SMTP_CHUNK_SIZE);
 		
 		$this->log->msg(SMTP_DEBUG, "<<< $buffer");
 			

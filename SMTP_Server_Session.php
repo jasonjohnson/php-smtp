@@ -107,9 +107,18 @@ class SMTP_Server_Session {
 		$this->socket->write(SMTP_354);
 		
 		$file = SMTP_INBOUND.$this->date."-".$this->to['user']."-".$this->to['domain'];
+		$size = 0;
+		$size_exceeded = false;
 		
 		if($msg = fopen($file, 'w+')) {
 			while($this->buffer = $this->socket->read()) {
+				$size += SMTP_CHUNK_SIZE;
+				
+				if($size > SMTP_MAX_SIZE) {
+					$size_exceeded = true;
+					break;
+				}
+				
 				fwrite($msg, $this->buffer);
 				
 				if(substr($this->buffer, -5) == "\r\n.\r\n") {
@@ -120,7 +129,11 @@ class SMTP_Server_Session {
 			fclose($msg);
 		}
 		
-		$this->socket->write(SMTP_250);
+		if(!$size_exceeded) {
+			$this->socket->write(SMTP_250);
+		} else {
+			$this->socket->write(SMTP_552);
+		}
 		
 		$this->complete = true;
 	}

@@ -27,6 +27,12 @@ set_time_limit(0);
 define(SMTP_INBOUND, './inbound/');
 define(SMTP_OUTBOUND, './outbound/');
 
+// Default max message size of 2MB
+define(SMTP_MAX_SIZE, 2097152);
+
+// Read from sockets in 1K chunks
+define(SMTP_CHUNK_SIZE, 1024);
+
 
 /**
  * SMTP response codes
