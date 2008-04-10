@@ -10,6 +10,7 @@
  */
 
 class SMTP_Server_Session {
+	var $log;
 	var $socket;
 	var $buffer;
 	var $date;
@@ -18,7 +19,11 @@ class SMTP_Server_Session {
 	var $domains;
 	var $complete;
 	
+	var $is_authenticated;
+	var $is_local_account;
+	
 	function SMTP_Server_Session($socket) {
+		$this->log = new SMTP_Server_Log();
 		$this->socket = $socket;
 		$this->date = time();
 		$this->to = array();
@@ -29,6 +34,9 @@ class SMTP_Server_Session {
 			'localhost',
 			'127.0.0.1',
 		);
+		
+		$this->is_authenticated = false;
+		$this->is_local_account = false;
 	}
 	
 	/**
@@ -56,9 +64,11 @@ class SMTP_Server_Session {
 		switch($cmd) {
 			case 'HELO':
 			case 'EHLO': $this->HELO($arg); break;
+			case 'AUTH': $this->AUTH($arg); break;
 			case 'MAIL': $this->MAIL($arg); break;
 			case 'RCPT': $this->RCPT($arg); break;
 			case 'DATA': $this->DATA($arg); break;
+			case 'RSET': $this->RSET($arg); break;
 			case 'HELP': $this->HELP($arg); break;
 			case 'QUIT': $this->QUIT($arg); break;
 			default: $this->NOT_IMPLEMENTED();
@@ -69,8 +79,42 @@ class SMTP_Server_Session {
 		$this->socket->write(SMTP_250);
 	} 
 	
+	function AUTH($arg) {
+		if(substr($arg, 0, 8) == 'CRAM-MD5') {
+			$this->AUTH_CRAM_MD5();
+		}
+		
+		if(substr($arg, 0, 5) == 'PLAIN') {
+			$this->AUTH_PLAIN(substr($arg, 6));
+		}
+		
+		if(substr($arg, 0, 5) == 'LOGIN') {
+			$this->AUTH_LOGIN();
+		}
+	}
+	
+	function AUTH_CRAM_MD5() {
+		$this->socket->write(SMTP_504);
+	}
+	
+	function AUTH_LOGIN() {
+		$this->socket->write(SMTP_504);
+	}
+	
+	function AUTH_PLAIN($arg) {
+		list($auth_id, $user_id, $password) = explode(chr(0),base64_decode($arg));
+		
+		$this->log->msg(SMTP_DEBUG, "AUTH ID: ".$auth_id);
+		$this->log->msg(SMTP_DEBUG, "USER ID: ".$user_id);
+		$this->log->msg(SMTP_DEBUG, "PASSWORD: ".$password);
+		
+		$this->socket->write(SMTP_235);
+		
+		$this->is_authenticated = true;
+	}
+	
 	function MAIL($arg) {
-		$arg = trim($arg, 'FROM:<>');
+		$arg = trim($arg, 'FROM: <>');
 		$arr = explode('@', $arg);
 		
 		$this->from['user'] = $arg[0];
@@ -80,16 +124,14 @@ class SMTP_Server_Session {
 	}
 	
 	function RCPT($arg) {
-		$arg = trim($arg, 'TO:<>');
+		$arg = trim($arg, 'TO: <>');
 		$arr = explode('@', $arg);
 		
 		$this->to['user'] = $arr[0];
 		$this->to['domain'] = $arr[1];
 		
-		if(!in_array($this->to['domain'], $this->domains)) {
+		if(!in_array($this->to['domain'], $this->domains) && !$this->is_authenticated) {
 			$this->socket->write(SMTP_550);
-			$this->socket->close();
-			
 			return;
 		}
 		
@@ -99,14 +141,14 @@ class SMTP_Server_Session {
 	function DATA($arg) {
 		if(!$this->to) {
 			$this->socket->write(SMTP_503);
-			$this->socket->close();
-			
 			return;
 		}
 		
 		$this->socket->write(SMTP_354);
 		
-		$file = SMTP_INBOUND.$this->date."-".$this->to['user']."-".$this->to['domain'];
+		$file = $this->is_authenticated?SMTP_OUTBOUND:SMTP_INBOUND;
+		$file .= $this->date."-".$this->to['user']."-".$this->to['domain'];
+		
 		$size = 0;
 		$size_exceeded = false;
 		
@@ -136,6 +178,10 @@ class SMTP_Server_Session {
 		}
 		
 		$this->complete = true;
+	}
+	
+	function RSET($arg) {
+		$this->socket->write(SMTP_250);
 	}
 	
 	function HELP($arg) {

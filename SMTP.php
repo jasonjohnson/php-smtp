@@ -42,6 +42,7 @@ define(SMTP_211, '211 System status, or system help reply');
 define(SMTP_214, '214 Help message');
 define(SMTP_220, '220 Service ready');
 define(SMTP_221, '221 Service closing transmission channel');
+define(SMTP_235, '235 Authentication successful');
 define(SMTP_250, '250 Requested mail action okay, completed');
 define(SMTP_251, '251 User not local');
 
@@ -60,6 +61,7 @@ define(SMTP_501, '501 Syntax error in parameters or arguments');
 define(SMTP_502, '502 Command not implemented');
 define(SMTP_503, '503 Bad sequence of commands');
 define(SMTP_504, '504 Command parameter not implemented');
+define(SMTP_535, '535 Authentication failed');
 define(SMTP_550, '550 Requested action not taken: mailbox unavailable');
 define(SMTP_551, '551 User not local');
 define(SMTP_552, '552 Requested mail action aborted: exceeded storage allocation');
