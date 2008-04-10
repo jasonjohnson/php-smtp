@@ -29,18 +29,23 @@ class SMTP_Server_Relay_Session {
 		
 		$hosts = array();
 		$weight = array();
+		$prefer = 999;
 		
 		getmxrr($domain, $hosts, $weight);
 		
 		for($i = 0; $i < count($hosts); $i++) {
 			$this->log->msg(SMTP_DEBUG, "HOST #".$i." for '".$domain."' is '".$hosts[$i]."' with the weight '".$weight[$i]."'");
+			
+			if($weight[$i] < $prefer) {
+				$prefer = $i;
+			}
 		}
 		
 		if(count($hosts) <= 0) {
 			return false;
 		}
 		
-		$this->host = $hosts[0];
+		$this->host = $hosts[$prefer];
 	}
 	
 	function extract_address($header) {

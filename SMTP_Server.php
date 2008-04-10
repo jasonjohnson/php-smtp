@@ -38,8 +38,10 @@ class SMTP_Server {
 		while(true) {
 			$this->remote = $this->socket->accept();
 			
-			$session = new SMTP_Server_Session($this->remote);
+			$session =& new SMTP_Server_Session($this->remote);
 			$session->run();
+			
+			$session = null;
 		}
 		
 		$this->socket->close();

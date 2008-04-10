@@ -30,10 +30,7 @@ class SMTP_Server_Session {
 		$this->from = array();
 		$this->complete = false;
 		
-		$this->domains = array(
-			'localhost',
-			'127.0.0.1',
-		);
+		$this->domains = explode(',', SMTP_VALID_DOMAINS);
 		
 		$this->is_authenticated = false;
 		$this->is_local_account = false;

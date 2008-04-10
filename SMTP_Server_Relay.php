@@ -23,8 +23,10 @@ class SMTP_Server_Relay {
 	}
 	
 	function relay($file_name) {
-		$session = new SMTP_Server_Relay_Session($file_name);
+		$session =& new SMTP_Server_Relay_Session($file_name);
 		$session->run();
+		
+		$session = null;
 	}
 	
 	function run() {

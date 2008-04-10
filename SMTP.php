@@ -22,6 +22,12 @@ set_time_limit(0);
 
 
 /**
+ * Accounts and domains
+ */
+define('SMTP_VALID_DOMAINS', '127.0.0.1,localhost');
+
+
+/**
  * Messages and storage
  */
 define('SMTP_INBOUND', './inbound/');
