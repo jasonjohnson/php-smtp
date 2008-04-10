@@ -153,12 +153,12 @@ class SMTP_Server_Session {
 		$this->socket->write(SMTP_354);
 		
 		$file = $this->is_authenticated?SMTP_OUTBOUND:SMTP_INBOUND;
-		$file .= $this->date."-".$this->to['user']."-".$this->to['domain'];
+		$file .= $this->date."@".$this->to['user']."@".$this->to['domain'];
 		
 		$size = 0;
 		$size_exceeded = false;
 		
-		if($msg = fopen($file, 'w+')) {
+		if($msg = fopen($file, 'w')) {
 			while($this->buffer = $this->socket->read()) {
 				$size += SMTP_CHUNK_SIZE;
 				

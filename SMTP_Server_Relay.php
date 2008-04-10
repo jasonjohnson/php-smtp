@@ -10,14 +10,28 @@
  */
 	
 class SMTP_Server_Relay {
+	function scan_outgoing() {
+		if($dir = opendir(SMTP_OUTBOUND)) {
+			while($file_name = readdir($dir)) {
+				if(substr($file_name, 0, 1) != '.') {
+					$this->relay(SMTP_OUTBOUND.$file_name);
+				}
+			}		
+			
+			closedir($dir);
+		}
+	}
 	
-	function SMTP_Server_Relay() {
-		
+	function relay($file_name) {
+		$session = new SMTP_Server_Relay_Session($file_name);
+		$session->run();
 	}
 	
 	function run() {
 		while(true) {
-			sleep(5);
+			$this->scan_outgoing();
+			
+			sleep(10);
 		}
 	}
 }

@@ -12,7 +12,7 @@
 /**
  * Report only critical errors. Set this to E_ALL to report all PHP errors
  */
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 
 
 /**
@@ -86,6 +86,7 @@ define(SMTP_LOG_LEVEL, SMTP_DEBUG);
 require_once 'SMTP_Server_Log.php';
 require_once 'SMTP_Server_Socket.php';
 require_once 'SMTP_Server_Session.php';
+require_once 'SMTP_Server_Relay_Session.php';
 require_once 'SMTP_Server_Relay.php';
 require_once 'SMTP_Server.php';
 ?>

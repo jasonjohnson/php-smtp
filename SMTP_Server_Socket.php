@@ -30,6 +30,18 @@ class SMTP_Server_Socket {
 	}
 	
 	/**
+	 * Connects to the the specified $host on $port
+	 *
+	 * @param string $host The host to connect to
+	 * @param int $port The port on the host to use, defaults to 25
+	 */
+	function connect($host, $port = 25) {
+		if(!socket_connect($this->socket, $host, $port)) {
+			$this->log->msg(SMTP_ERROR, "Could not connect to '".$host."' on port '".$port."'");
+		}
+	}
+	
+	/**
 	 * Binds the socket to a host and port
 	 *
 	 * @param string $host The host to bind the socket to
@@ -85,10 +97,25 @@ class SMTP_Server_Socket {
 	 *
 	 * @param string $buffer The buffer to be written to the socket
 	 */
-	function write($buffer) {
+	function write($buffer, $raw = false) {
 		$this->log->msg(SMTP_DEBUG, ">>> $buffer");
 		
-		socket_write($this->socket, ($buffer."\r\n"));
+		socket_write($this->socket, ($raw?$buffer:($buffer."\r\n")));
+	}
+	
+	/**
+	 * Writes an entire file to the socket
+	 *
+	 * @param string $path The absolute or relative path of the file
+	 */
+	function write_file($path) {
+		if($file = fopen($path, 'r')) {
+			while(!feof($file)) {
+				$this->write(fgets($file), true);
+			}
+			
+			fclose($file);
+		}
 	}
 	
 	/**
