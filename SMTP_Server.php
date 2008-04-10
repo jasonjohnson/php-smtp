@@ -21,9 +21,9 @@ class SMTP_Server {
 	 * @param string $host IP address to bind the server to, defaults to 127.0.0.1
 	 * @param int $port Port to user on the specified host address, defaults to 25
 	 */
-	function SMTP_Server($host = '127.0.0.1', $port = 25) {
-		$this->host = $host;
-		$this->port = $port;
+	function SMTP_Server($host = null, $port = null) {
+		$this->host = $host?$host:SMTP_HOST;
+		$this->port = $port?$port:SMTP_PORT;
 		$this->domains = array();
 		
 		$this->socket = new SMTP_Server_Socket();

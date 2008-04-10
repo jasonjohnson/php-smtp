@@ -22,9 +22,18 @@ set_time_limit(0);
 
 
 /**
- * Accounts and domains
+ * IP address and port to use. Set SMTP_HOST to the public-facing IP address you want
+ * the SMTP server to listen on.
  */
-define('SMTP_VALID_DOMAINS', '127.0.0.1,localhost');
+define('SMTP_HOST', '127.0.0.1');
+define('SMTP_PORT', 25);
+
+
+/**
+ * A comma separated list of domains, e.g. "example1.com,example2.com" When set to this,
+ * the server will accept email for accounts *@example1.com and *@example2.com.
+ */
+define('SMTP_VALID_DOMAINS', '');
 
 
 /**
@@ -56,7 +65,7 @@ define('SMTP_251', '251 User not local');
 define('SMTP_354', '354 Start mail input; end with <CRLF>.<CRLF>');
 
 // 400's
-define('SMTP_421', '421 Service not available,');
+define('SMTP_421', '421 Service not available');
 define('SMTP_450', '450 Requested mail action not taken: mailbox unavailable');
 define('SMTP_451', '451 Requested action aborted: error in processing');
 define('SMTP_452', '452 Requested action not taken: insufficient system storage');
