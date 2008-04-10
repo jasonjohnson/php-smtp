@@ -62,8 +62,8 @@ class SMTP_Server_Session {
 	
 	function dispatch($cmd, $arg) {			
 		switch($cmd) {
-			case 'HELO':
-			case 'EHLO': $this->HELO($arg); break;
+			case 'HELO': $this->HELO($arg); break;
+			case 'EHLO': $this->EHLO($arg); break;
 			case 'AUTH': $this->AUTH($arg); break;
 			case 'MAIL': $this->MAIL($arg); break;
 			case 'RCPT': $this->RCPT($arg); break;
@@ -74,7 +74,13 @@ class SMTP_Server_Session {
 			default: $this->NOT_IMPLEMENTED();
 		}
 	}
-			
+	
+	function EHLO($arg) {
+		$this->socket->write('250-This host supports a few commands');
+		$this->socket->write('250-AUTH PLAIN CRAM-MD5');
+		$this->socket->write('250 HELP');
+	}
+	
 	function HELO($arg) {
 		$this->socket->write(SMTP_250);
 	} 
