@@ -149,7 +149,19 @@ class SMTP_Server_Session {
 		
 		$this->socket->write(SMTP_354);
 		
-		$file = $this->is_authenticated?SMTP_OUTBOUND:SMTP_INBOUND;
+		if($this->is_authenticated) {
+			$file = SMTP_OUTBOUND;
+		} else {
+			$file = SMTP_INBOUND;
+			$file .= $this->to['domain'].DIRECTORY_SEPARATOR;
+			$file .= $this->to['user'].DIRECTORY_SEPARATOR;
+		}
+				
+		// If the path does not exist, create it recursively
+		if(!file_exists($file)) {
+			mkdir($file, 0700, true); // PHP5-only, need substitute
+		}
+		
 		$file .= $this->date."@".$this->to['user']."@".$this->to['domain'];
 		
 		$size = 0;
