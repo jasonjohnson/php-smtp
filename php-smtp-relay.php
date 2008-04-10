@@ -12,7 +12,19 @@
 require_once 'SMTP.php';
 
 /**
- * Start an instance of the relay
+ * Create an instance of the API
+ */
+$api = new SMTP_Server_API();
+
+
+/**
+ * Include user-defined callbacks
+ */
+require_once 'callbacks.php';
+
+
+/**
+ * Start an instance of the server relay
  */
 $relay = new SMTP_Server_Relay();
 $relay->run();

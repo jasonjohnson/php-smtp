@@ -12,6 +12,18 @@
 require_once 'SMTP.php';
 
 /**
+ * Create an instance of the API
+ */
+$api = new SMTP_Server_API();
+
+
+/**
+ * Include user-defined callbacks
+ */
+require_once 'callbacks.php';
+
+
+/**
  * Start an instance of the server
  */
 $server = new SMTP_Server();

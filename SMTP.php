@@ -12,7 +12,7 @@
 /**
  * Report only critical errors. Set this to E_ALL to report all PHP errors
  */
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 
 
 /**
@@ -98,6 +98,22 @@ define('SMTP_DEBUG', 5);
 define('SMTP_LOG_LEVEL', SMTP_DEBUG);
 
 
+/**
+ * API - an "Event" notifies registered methods of something happening, whereas a "Hook"
+ * directly changes how something works.
+ *
+ * Methods receiving events will be passed documented values and should not return anything
+ * Methods receiving hook challenges will be passed documentd values and should return either true or false
+ */
+// Events
+define('SMTP_API_AUTH_CHALLENGE', 1);
+define('SMTP_API_AUTH_SUCCESS', 2);
+define('SMTP_API_AUTH_FAILURE', 3);
+
+// Hooks
+define('SMTP_API_AUTH', 1);
+
+require_once 'SMTP_Server_API.php';
 require_once 'SMTP_Server_Log.php';
 require_once 'SMTP_Server_Socket.php';
 require_once 'SMTP_Server_Session.php';

@@ -8,12 +8,13 @@
  * @version 1.0
  * @package php-smtp
  */
-	
+
 class SMTP_Server {
 	var $socket;
 	var $host;
 	var $port;
 	var $remote;
+	var $api;
 	
 	/**
 	 * Constructor, no required parameters if binding to the localhost interface.
@@ -22,9 +23,13 @@ class SMTP_Server {
 	 * @param int $port Port to user on the specified host address, defaults to 25
 	 */
 	function SMTP_Server($host = null, $port = null) {
+		global $api;
+		
 		$this->host = $host?$host:SMTP_HOST;
 		$this->port = $port?$port:SMTP_PORT;
 		$this->domains = array();
+		
+		$this->api = &$api;
 		
 		$this->socket = new SMTP_Server_Socket();
 		$this->socket->bind($this->host, $this->port);

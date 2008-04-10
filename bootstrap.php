@@ -9,6 +9,6 @@
  * @package php-smtp
  */
 
-passthru('php ./php-smtp.php');
-passthru('php ./php-smtp-relay.php');
+passthru('php ./php-smtp.php&');
+passthru('php ./php-smtp-relay.php&');
 ?>

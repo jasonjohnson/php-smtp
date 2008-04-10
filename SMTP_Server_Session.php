@@ -18,17 +18,21 @@ class SMTP_Server_Session {
 	var $from;
 	var $domains;
 	var $complete;
+	var $api;
 	
 	var $is_authenticated;
 	var $is_local_account;
 	
 	function SMTP_Server_Session($socket) {
+		global $api;
+		
 		$this->log = new SMTP_Server_Log();
 		$this->socket = $socket;
 		$this->date = time();
 		$this->to = array();
 		$this->from = array();
 		$this->complete = false;
+		$this->api = &$api;
 		
 		$this->domains = explode(',', SMTP_VALID_DOMAINS);
 		
@@ -107,13 +111,13 @@ class SMTP_Server_Session {
 	function AUTH_PLAIN($arg) {
 		list($auth_id, $user_id, $password) = explode(chr(0),base64_decode($arg));
 		
-		$this->log->msg(SMTP_DEBUG, "AUTH ID: ".$auth_id);
-		$this->log->msg(SMTP_DEBUG, "USER ID: ".$user_id);
-		$this->log->msg(SMTP_DEBUG, "PASSWORD: ".$password);
-		
-		$this->socket->write(SMTP_235);
-		
-		$this->is_authenticated = true;
+		if($this->api->hook(SMTP_API_AUTH, $auth_id, $user_id, $password)) {
+			$this->is_authenticated = true;
+			$this->socket->write(SMTP_235);
+		} else {
+			$this->is_authenticated = false;
+			$this->socket->write(SMTP_550);
+		}
 	}
 	
 	function MAIL($arg) {
@@ -156,7 +160,7 @@ class SMTP_Server_Session {
 			$file .= $this->to['domain'].DIRECTORY_SEPARATOR;
 			$file .= $this->to['user'].DIRECTORY_SEPARATOR;
 		}
-				
+		
 		// If the path does not exist, create it recursively
 		if(!file_exists($file)) {
 			mkdir($file, 0700, true); // PHP5-only, need substitute
