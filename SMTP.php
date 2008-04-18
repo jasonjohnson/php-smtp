@@ -12,7 +12,7 @@
 /**
  * Report only critical errors. Set this to E_ALL to report all PHP errors
  */
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 
 
 /**
@@ -99,6 +99,12 @@ define('SMTP_LOG_LEVEL', SMTP_DEBUG);
 
 
 /**
+ * Indexing
+ */
+define('SMTP_INDEX', './index');
+
+
+/**
  * API - an "Event" notifies registered methods of something happening, whereas a "Hook"
  * directly changes how something works.
  *
@@ -115,6 +121,7 @@ define('SMTP_API_AUTH', 1);
 
 require_once 'SMTP_Server_API.php';
 require_once 'SMTP_Server_Log.php';
+require_once 'SMTP_Server_Index.php';
 require_once 'SMTP_Server_Socket.php';
 require_once 'SMTP_Server_Session.php';
 require_once 'SMTP_Server_Relay_Session.php';

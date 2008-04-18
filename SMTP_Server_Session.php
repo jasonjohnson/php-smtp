@@ -11,6 +11,7 @@
 
 class SMTP_Server_Session {
 	var $log;
+	var $index;
 	var $socket;
 	var $buffer;
 	var $date;
@@ -27,6 +28,8 @@ class SMTP_Server_Session {
 		global $api;
 		
 		$this->log = new SMTP_Server_Log();
+		$this->index = new SMTP_Server_Index();
+		
 		$this->socket = $socket;
 		$this->date = time();
 		$this->to = array();
@@ -121,27 +124,27 @@ class SMTP_Server_Session {
 	}
 	
 	function MAIL($arg) {
-		$arg = trim($arg, 'FROM: <>');
+		$arg = trim($arg, 'FfRrOoMm: <>');
 		$arr = explode('@', $arg);
 		
-		$this->from['user'] = $arg[0];
-		$this->from['domain'] = $arg[1];
+		$this->from['user'] = $arr[0];
+		$this->from['domain'] = $arr[1];
 		
 		$this->socket->write(SMTP_250);
 	}
 	
 	function RCPT($arg) {
-		$arg = trim($arg, 'TO: <>');
+		$arg = trim($arg, 'TtOo: <>');
 		$arr = explode('@', $arg);
 		
-		$this->to['user'] = $arr[0];
-		$this->to['domain'] = $arr[1];
+		$to = array('user' => $arr[0], 'domain' => $arr[1]);
 		
-		if(!in_array($this->to['domain'], $this->domains) && !$this->is_authenticated) {
+		if(!in_array($to['domain'], $this->domains) && !$this->is_authenticated) {
 			$this->socket->write(SMTP_550);
 			return;
 		}
 		
+		$this->to[] = $to;
 		$this->socket->write(SMTP_250);
 	}
 	
@@ -163,11 +166,13 @@ class SMTP_Server_Session {
 		
 		// If the path does not exist, create it recursively
 		if(!file_exists($file)) {
-			mkdir($file, 0700, true); // PHP5-only, need substitute
+			mkdir($file, 0700, true);
 		}
 		
-		$file .= $this->date."@".$this->to['user']."@".$this->to['domain'];
+		$file .= $this->date."@".$this->to[0]['user']."@".$this->to[0]['domain'];
 		
+		$this->index->write($file, $this->to, $this->from, $this->date);
+				
 		$size = 0;
 		$size_exceeded = false;
 		

@@ -10,20 +10,16 @@
  */
 	
 class SMTP_Server_Relay {
-	function scan_outgoing() {
-		if($dir = opendir(SMTP_OUTBOUND)) {
-			while($file_name = readdir($dir)) {
-				if(substr($file_name, 0, 1) != '.') {
-					$this->relay(SMTP_OUTBOUND.$file_name);
-				}
-			}		
-			
-			closedir($dir);
-		}
-	}
+	var $log;
+	var $index;
 	
-	function relay($file_name) {
-		$session =& new SMTP_Server_Relay_Session($file_name);
+	function SMTP_Server_Relay() {
+		$this->log = new SMTP_Server_Log();
+		$this->index = new SMTP_Server_Index();
+	}
+		
+	function relay($pos) {
+		$session =& new SMTP_Server_Relay_Session($pos);
 		$session->run();
 		
 		$session = null;
@@ -31,7 +27,15 @@ class SMTP_Server_Relay {
 	
 	function run() {
 		while(true) {
-			$this->scan_outgoing();
+			$this->index->read();
+			
+			if($this->index->length() > 0) {
+				for($pos = 0; $pos < $this->index->length(); $pos++) {
+					$this->relay($pos);
+				}
+			}
+			
+			$this->index->truncate();
 			
 			sleep(10);
 		}

@@ -9,7 +9,7 @@
  * @package php-smtp
  */
 
-function simple_auth($auth_id, $user_id, $password) {
+function auth_example($auth_id, $user_id, $password) {
 	$users = array(
 		array('jason','123'),
 		array('brian','456'),
@@ -25,5 +25,8 @@ function simple_auth($auth_id, $user_id, $password) {
 	return false;
 }
 
-$api->register_hook(SMTP_API_AUTH, 'simple_auth');
+function auth_mysql($auth_id, $user_id, $password) { /* ... */ }
+function auth_ldap($auth_id, $user_id, $password) { /* ... */ }
+
+$api->register_hook(SMTP_API_AUTH, 'auth_example');
 ?>

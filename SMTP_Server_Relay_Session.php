@@ -11,32 +11,41 @@
 
 class SMTP_Server_Relay_Session {
 	var $log;
+	var $index;
+	var $socket;
 	var $file_name;
 	var $to;
 	var $from;
 	var $host;
-	var $socket;
+	var $date;
 	var $headers = array();
 	
-	function SMTP_Server_Relay_Session($file_name) {
+	function SMTP_Server_Relay_Session($pos) {
 		$this->log = new SMTP_Server_Log();
+		$this->index = new SMTP_Server_Index();
 		$this->socket = new SMTP_Server_Socket();
-		$this->file_name = $file_name;
+		
+		$rec = $this->index->get($pos);
+		
+		$this->file_name = $rec[0];
+		$this->to = $rec[1];
+		$this->from = $rec[2];
+		$this->date = $rec[3];
 	}
 	
-	function resolve() {
-		list($user, $domain) = $this->split_address($this->to);
+	function resolve($address) {
+		list($user, $domain) = $this->split_address($address);
 		
 		$hosts = array();
 		$weight = array();
-		$prefer = 999;
+		$prefer = 0;
 		
 		getmxrr($domain, $hosts, $weight);
 		
 		for($i = 0; $i < count($hosts); $i++) {
 			$this->log->msg(SMTP_DEBUG, "HOST #".$i." for '".$domain."' is '".$hosts[$i]."' with the weight '".$weight[$i]."'");
 			
-			if($weight[$i] < $prefer) {
+			if($weight[$i] < $weight[$prefer]) {
 				$prefer = $i;
 			}
 		}
@@ -44,6 +53,8 @@ class SMTP_Server_Relay_Session {
 		if(count($hosts) <= 0) {
 			return false;
 		}
+		
+		$this->log->msg(SMTP_DEBUG, "PREFER HOST INDEX $prefer");
 		
 		$this->host = $hosts[$prefer];
 	}
@@ -80,13 +91,13 @@ class SMTP_Server_Relay_Session {
 		}
 	}
 	
-	function send() {
+	function send($to) {
 		$this->socket->connect($this->host);
 		
 		while(true) {
 			if(!$this->HELO()) break;
 			if(!$this->MAIL()) break;
-			if(!$this->RCPT()) break;
+			if(!$this->RCPT($to)) break;
 			if(!$this->DATA()) break;
 			if(!$this->QUIT()) break;
 			
@@ -116,8 +127,8 @@ class SMTP_Server_Relay_Session {
 		return true;
 	}
 	
-	function RCPT() {
-		$this->socket->write("RCPT TO: <".$this->to.">");
+	function RCPT($to) {
+		$this->socket->write("RCPT TO: <".$to.">");
 		
 		if(substr($this->socket->read(), 0, 1) != '2') {
 			return false;
@@ -154,12 +165,17 @@ class SMTP_Server_Relay_Session {
 	}
 	
 	function run() {
-		$this->scan_headers();
-		$this->resolve();
-		$this->send();
+		if(!file_exists($this->file_name))
+			return false;
+		
+		for($i = 0; $i < count($this->to); $i++) {
+			$this->resolve($this->to[$i]);
+			$this->send($this->to[$i]);
+		}
+		
 		$this->remove();
 		
-		$this->log->msg(SMTP_DEBUG, "RELAYED MESSAGE TO '".$this->to."' FROM '".$this->from."'");
+		$this->log->msg(SMTP_DEBUG, "RELAYED MESSAGE TO '".join(',',$this->to)."' FROM '".$this->from."'");
 	}
 }
 ?>
