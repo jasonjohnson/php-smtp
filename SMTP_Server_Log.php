@@ -12,6 +12,20 @@
 class SMTP_Server_Log {
 	var $handle;
 	
+	function SMTP_Server_Log() {
+		// If the log file exists and is writable, nothing else to do
+		if(file_exists(SMTP_LOG) && is_writable(SMTP_LOG))
+			return;
+		
+		// Die if we could not create the log file directory
+		if(mkdir(dirname(SMTP_LOG), 0744, true) === false)
+			die("Could not create log file directory\n");
+		
+		// Die if we could not create the log file
+		if(touch(SMTP_LOG) === false)
+			die("Could not create log file\n");
+	}
+	
 	function open() {
 		$this->handle = fopen(SMTP_LOG, 'a');
 	}
