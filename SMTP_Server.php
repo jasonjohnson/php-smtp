@@ -13,7 +13,6 @@ class SMTP_Server {
 	var $socket;
 	var $host;
 	var $port;
-	var $remote;
 	var $api;
 	
 	/**
@@ -41,12 +40,13 @@ class SMTP_Server {
 	 */
 	function run() {
 		while(true) {
-			$this->remote = $this->socket->accept();
+			$remote = $this->socket->accept();
 			
-			$session =& new SMTP_Server_Session($this->remote);
+			$session =& new SMTP_Server_Session($remote);
 			$session->run();
 			
 			$session = null;
+			$remote = null;
 		}
 		
 		$this->socket->close();
